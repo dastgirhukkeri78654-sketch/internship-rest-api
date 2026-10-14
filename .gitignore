@@ -1,0 +1,7 @@
+```text
+node_modules/
+.env
+.DS_Store
+internships.sqlite
+server.backup.js
+```

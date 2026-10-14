@@ -1,0 +1,16 @@
+{
+  "name": "internship-rest-api",
+  "version": "1.0.0",
+  "description": "Beginner-friendly REST API for internship records using Express and SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "sql.js": "^1.13.0"
+  }
+}
