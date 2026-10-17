@@ -1,66 +1,95 @@
 # Internship REST API & Internship Board
 
-A beginner-friendly full-stack internship board built with Node.js, Express, a SQLite database powered by sql.js, and a responsive HTML/CSS/JavaScript frontend.
-
-The application retrieves internship records through an API and provides search, domain filtering, and an internship application form.
+A responsive internship board built with **Node.js, Express, sql.js (SQLite), HTML, CSS, and JavaScript**. Users can explore internships, search and filter listings, view internship details, and submit applications.
 
 ## Features
 
-- Responsive internship listing interface.
-- API-driven internship cards.
-- Search internships and filter by domain.
-- Loading, error, retry, and empty-result states.
-- Application form with client-side and server-side validation.
-- SQLite-backed storage for internship records and submitted applications.
-- JSON API responses with consistent error handling.
-- Security middleware and parameterized SQL queries.
+- Responsive interface designed for mobile and desktop.
+- Internship listings loaded from the REST API.
+- Search, domain filtering, and work-mode filtering.
+- Internship details and application form.
+- Loading, empty, error, and retry states.
+- Client-side and server-side input validation.
+- SQLite-backed internship and application storage.
+- Consistent JSON API responses and error handling.
+- Request logging with timestamps, HTTP methods, paths, status codes, and response durations.
+- Health-check endpoint.
+- Security headers using Helmet.
+- API rate limiting and a 10 KB JSON request-body limit.
+- Parameterized SQL queries.
+
+## Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| HTML | Page structure |
+| CSS | Responsive design |
+| JavaScript | Frontend interactions |
+| Node.js | JavaScript runtime |
+| Express.js | REST API and web server |
+| sql.js (SQLite) | Local database |
+| Helmet | Security-related HTTP headers |
+| express-rate-limit | API rate limiting |
 
 ## Requirements
 
-Install Node.js LTS from https://nodejs.org/. npm is included.
+Install Node.js LTS from https://nodejs.org/.
 
-## Run locally
+Verify installation:
+
+```bash
+node --version
+npm --version
+```
+
+## Run the Project Locally
 
 1. Open this project folder in VS Code.
-2. Open Terminal → New Terminal.
+2. Open **Terminal → New Terminal**.
 3. Install dependencies:
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
 4. Start the server:
 
-   ```bash
-   npm start
-   ```
+```bash
+npm start
+```
 
-5. Open the internship board:
+5. Open the application:
 
-   http://localhost:3000/
+http://localhost:3000/
 
 6. Open the API guide:
 
-   http://localhost:3000/api
+http://localhost:3000/api
 
-The first run initializes the local SQLite database and seeds five fictional internship records. Database changes are saved locally in `internships.sqlite`.
+7. Check server health:
 
-## API endpoints
+http://localhost:3000/api/health
+
+The application initializes its local database and adds five fictional internship records when the internship table is empty. Database changes are saved in `internships.sqlite`.
+
+## API Endpoints
 
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/api` | API guide |
 | GET | `/api/health` | Health check |
 | GET | `/api/internships?page=1&limit=10` | List internships with pagination |
-| GET | `/api/internships/:id` | Retrieve one internship |
+| GET | `/api/internships/:id` | Retrieve an internship |
 | POST | `/api/internships` | Create an internship |
 | PUT | `/api/internships/:id` | Update an internship |
 | DELETE | `/api/internships/:id` | Delete an internship |
-| POST | `/api/applications` | Submit an internship application |
+| POST | `/api/applications` | Submit an application |
 
-### Internship record example
+## Example API Requests
 
-Example request body for `POST /api/internships`:
+### Create an internship
+
+Send a JSON request to `POST /api/internships`:
 
 ```json
 {
@@ -74,9 +103,9 @@ Example request body for `POST /api/internships`:
 }
 ```
 
-Allowed `mode` values are `Remote`, `Hybrid`, and `On-site`. The duration must be between 1 and 104 weeks, and openings must be between 0 and 10000.
+Allowed work modes are `Remote`, `Hybrid`, and `On-site`. Internship duration must be between 1 and 104 weeks.
 
-### Application submission example
+### Submit an application
 
 Send a JSON request to `POST /api/applications`:
 
@@ -88,49 +117,79 @@ Send a JSON request to `POST /api/applications`:
 }
 ```
 
-A successful submission returns HTTP `201` and a success message. Invalid input returns a validation error. Applications are saved to the local database.
+A successful application returns HTTP `201`. Invalid input returns a validation error. Use fictional applicant information for testing.
 
-Use fictional test names and email addresses when testing.
+## Frontend Behaviour
 
-## Frontend behavior
+The frontend is served from the `public/` directory.
 
-The frontend is served by Express from the `public/` directory.
+- Loads internship data from the API.
+- Supports keyword search and domain/work-mode filters.
+- Displays internship details.
+- Populates application options using API data.
+- Displays loading, empty, and error states.
+- Provides a retry action when a request fails.
+- Validates application input and displays the API response.
 
-- Fetches internship records from `/api/internships`.
-- Populates the domain filter and application dropdown using API data.
-- Displays loading and error states.
-- Supports search and domain filtering.
-- Submits application data to `/api/applications`.
-- Displays the API response to the user.
+## Logging and Health Checks
 
-## Security measures
+The server logs request metadata, including:
 
-The application includes the following measures in its server implementation:
+- Timestamp
+- HTTP method
+- Request path
+- HTTP response status
+- Response duration in milliseconds
 
-- **Helmet:** sets security-related HTTP headers.
-- **Rate limiting:** limits API requests to reduce excessive request traffic.
-- **Request size limit:** limits JSON request bodies.
-- **Server-side validation:** checks application fields before saving.
-- **Parameterized SQL queries:** separates user-supplied values from SQL statements.
-- **Error handling:** returns structured API errors.
-- **Environment secrets:** `.env` is excluded from Git.
+Request bodies and applicant personal information should not be included in request logs.
 
-These measures reduce common application risks but do not constitute a complete security audit.
+Check the health endpoint at:
 
-## Quick tests
+`GET /api/health`
 
-With the server running, check:
+A healthy response currently returns:
 
-- Health: http://localhost:3000/api/health
-- First page: http://localhost:3000/api/internships?page=1&limit=2
-- Internship details: http://localhost:3000/api/internships/INT-101
-- API guide: http://localhost:3000/api
+```json
+{
+  "success": true,
+  "status": "ok",
+  "database": "connected"
+}
+```
 
-Test application submission with the PowerShell examples in `API-EXAMPLES.md` or an API client such as Postman.
+## Security Measures
 
-Verify both valid and invalid application submissions, and confirm that the frontend displays the appropriate result.
+- **Helmet:** Adds security-related HTTP headers.
+- **Rate limiting:** Limits API traffic to 100 requests per 15-minute window.
+- **Request size limit:** Restricts JSON request bodies to 10 KB.
+- **Server-side validation:** Validates internship and application inputs.
+- **Parameterized SQL:** Helps protect against SQL injection.
+- **Error handling:** Returns structured API errors.
+- **Git exclusions:** `.env`, local database files, and `node_modules/` are excluded from version control.
 
-## Project structure
+These controls reduce common risks but do not replace a full security audit. Production deployment requires additional review of authentication, authorization, personal-data protection, and operational security.
+
+## Testing and Verification
+
+### Checks completed
+
+- [x] Application starts using `npm start`.
+- [x] Health endpoint returns HTTP 200.
+- [x] Health response reports the database as connected.
+- [x] Security headers and rate-limit headers are returned.
+- [x] JavaScript syntax check passed using `node --check server.js`.
+- [x] Internship listings load.
+- [x] Search works.
+- [x] Domain and work-mode filters work.
+- [x] Internship details display correctly.
+- [x] Empty form and invalid email are rejected.
+- [x] API failure message and retry button work.
+- [x] Mobile layout tested at 360 px with no horizontal scrolling.
+- [x] Request-logging middleware is present.
+
+**Additional verification:** Confirm request logs appear in the server terminal after a request. Complete any remaining keyboard-accessibility, regression, and security checks before describing the project as production-ready.
+
+## Project Structure
 
 ```text
 internship-rest-api/
@@ -143,13 +202,27 @@ internship-rest-api/
 ├── package-lock.json
 ├── README.md
 ├── API-EXAMPLES.md
+├── TEST-REPORT.md
+├── SECURITY-CHECKLIST.md
 └── .gitignore
 ```
 
-The local database file and `node_modules/` directory are excluded from version control.
+## Scope and Limitations
 
-## Scope and limitations
+This project uses fictional internship records and runs locally by default. It is not connected to EdVyro's internal systems or real applicant records.
 
-This project uses fictional internship records and runs locally by default. It is not connected to EdVyro's internal systems or real internship applicant records.
+The project should undergo additional testing and deployment checks before being used with real applicants or sensitive information.
 
-Before production deployment, additional checks may be required for authentication, authorization, personal-data protection, database constraints, logging, and deployment configuration.
+## Deployment and Walkthrough
+
+- **Live application URL:** Add the deployed URL after deployment.
+- **Walkthrough video:** Add the video link after recording.
+- **Test evidence:** Add screenshots or links to the completed test report.
+
+Do not publish credentials, API secrets, or real applicant data in screenshots or documentation.
+
+## Author
+
+**Dastagir Hukkeri**
+
+Full Stack Development Internship — Capstone Project

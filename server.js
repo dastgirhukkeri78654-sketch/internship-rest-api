@@ -10,8 +10,28 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'internships.sqlite');
 
+
 app.use(helmet());
+
+// Safe request logging: never log request bodies or personal data.
+app.use((req, res, next) => {
+  const startTime = Date.now();
+
+  res.on('finish', () => {
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      durationMs: Date.now() - startTime
+    }));
+  });
+
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use(express.json({ limit: '10kb' }));
 
