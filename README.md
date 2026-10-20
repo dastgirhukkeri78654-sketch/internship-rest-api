@@ -3,7 +3,7 @@
 A responsive internship board built with **Node.js, Express, sql.js (SQLite), HTML, CSS, and JavaScript**. Users can explore internships, search and filter listings, view internship details, and submit applications.
 
 ## Features
-
+- Duplicate application prevention for the same email address and internship.
 - Responsive interface designed for mobile and desktop.
 - Internship listings loaded from the REST API.
 - Search, domain filtering, and work-mode filtering.
@@ -84,6 +84,7 @@ The application initializes its local database and adds five fictional internshi
 | PUT | `/api/internships/:id` | Update an internship |
 | DELETE | `/api/internships/:id` | Delete an internship |
 | POST | `/api/applications` | Submit an application |
+Submitting another application for the same internship with the same email address returns HTTP `409 Conflict`.
 
 ## Example API Requests
 
@@ -172,6 +173,9 @@ These controls reduce common risks but do not replace a full security audit. Pro
 ## Testing and Verification
 
 ### Checks completed
+- [x] Duplicate application submission is rejected with HTTP `409 Conflict`.
+- [x] Empty application submission returns HTTP `400 Bad Request` with validation details.
+- [x] Health endpoint at `/api/health` returns HTTP `200 OK` with database status `connected`.
 
 - [x] Application starts using `npm start`.
 - [x] Health endpoint returns HTTP 200.

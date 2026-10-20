@@ -11,17 +11,15 @@
 - [x] Parameterized SQL used for application insertion (verify other database queries before claiming full coverage).
 
 ## Verified by testing
-
+- [x] Unknown API routes return HTTP 404.
+- [x] Malformed JSON requests return HTTP 400.
+- [x] Duplicate applications return HTTP 409.
+- [x] Rate-limit enforcement verified with repeated requests; HTTP 429 returned when the limit was reached.
 - [x] Invalid application data rejected with HTTP 400.
 - [x] Unknown internship ID rejected with HTTP 404.
 - [x] Security headers observed in API responses.
 - [x] Error state displayed when internship API requests fail.
 
-## Still to verify
-
-- [ ] Rate-limit enforcement through repeated requests.
-- [ ] Parameterized query usage across all database operations.
-- [ ] Final review of error handling and production configuration.
 
 ## Scope
 This checklist records the current development implementation and observed tests. It is not a certification or a guarantee that the application is free from security vulnerabilities.

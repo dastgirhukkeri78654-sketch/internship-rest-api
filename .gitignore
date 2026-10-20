@@ -1,7 +1,12 @@
 ```text
 node_modules/
+server-backup.js
+test-application.json
+node_modules/
 .env
 .DS_Store
 internships.sqlite
 server.backup.js
-```
+server-backup.js
+test-application.json
+lighthouse-report.png/

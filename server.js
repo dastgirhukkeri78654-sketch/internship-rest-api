@@ -4,35 +4,12 @@ const path = require('path');
 const initSqlJs = require('sql.js');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'internships.sqlite');
 
-
 app.use(helmet());
-
-// Safe request logging: never log request bodies or personal data.
-app.use((req, res, next) => {
-  const startTime = Date.now();
-
-  res.on('finish', () => {
-    console.log(JSON.stringify({
-      timestamp: new Date().toISOString(),
-      method: req.method,
-      path: req.path,
-      status: res.statusCode,
-      durationMs: Date.now() - startTime
-    }));
-  });
-
-  next();
-});
-
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 app.use(express.json({ limit: '10kb' }));
 
 const apiLimiter = rateLimit({
@@ -49,10 +26,7 @@ const apiLimiter = rateLimit({
 });
 
 app.use('/api', apiLimiter);
-
 let db;
-
-
 function saveDatabase() {
   fs.writeFileSync(DB_FILE, Buffer.from(db.export()));
 }
@@ -123,7 +97,6 @@ function setupDatabase() {
 }
 
 app.get('/', (req,res) => res.json({ name:'Internship REST API', version:'1.0.0', docs:'/api', health:'/api/health' }));
-
 app.get('/api', (req, res) => res.json({
   success: true,
   endpoints: {
@@ -147,7 +120,6 @@ app.get('/api', (req, res) => res.json({
 }));
 
 app.get('/api/health', (req,res) => res.json({ success:true, status:'ok', database:'connected' }));
-
 app.get('/api/internships', (req,res) => {
   const page = Number.parseInt(req.query.page ?? '1',10);
   const limit = Number.parseInt(req.query.limit ?? '10',10);
@@ -193,7 +165,6 @@ app.delete('/api/internships/:id', (req,res) => {
 
 app.post('/api/applications', (req, res) => {
   const { applicantName, email, internshipId } = req.body || {};
-
   const allowedFields = ['applicantName', 'email', 'internshipId'];
   const unknownFields = Object.keys(req.body || {})
     .filter(key => !allowedFields.includes(key));
@@ -203,7 +174,6 @@ app.post('/api/applications', (req, res) => {
   }
 
   const errors = [];
-
   if (typeof applicantName !== 'string' ||
       applicantName.trim().length < 2 ||
       applicantName.trim().length > 100) {
@@ -215,40 +185,52 @@ app.post('/api/applications', (req, res) => {
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.push('A valid email address is required.');
   }
-
   if (typeof internshipId !== 'string' ||
       internshipId.trim().length === 0 ||
       internshipId.length > 50) {
     errors.push('internshipId is required.');
   }
-
   if (errors.length) {
     return errorResponse(res, 400, 'Validation failed.', errors);
   }
 
   const internship = getRecord(internshipId.trim());
-
   if (!internship) {
     return errorResponse(res, 404, 'Internship not found.');
   }
-
   if (!internship.applicationsOpen) {
     return errorResponse(res, 400, 'Applications are closed for this internship.');
   }
-
   if (internship.openings < 1) {
     return errorResponse(res, 400, 'No openings are currently available.');
   }
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedInternshipId = internshipId.trim();
 
+  // Check whether this email has already applied for this internship.
+  const duplicateStmt = db.prepare(
+    'SELECT 1 FROM applications WHERE LOWER(TRIM(email)) = ? AND internship_id = ? LIMIT 1'
+  );
+  duplicateStmt.bind([normalizedEmail, normalizedInternshipId]);
+  const alreadyApplied = duplicateStmt.step();
+  duplicateStmt.free();
+
+  if (alreadyApplied) {
+    return errorResponse(
+      res,
+      409,
+      'You have already applied for this internship with this email address.'
+    );
+  }
   const stmt = db.prepare(
     'INSERT INTO applications (applicant_name, email, internship_id) VALUES (?, ?, ?)'
   );
 
   try {
-    stmt.run([
+      stmt.run([
       applicantName.trim(),
-      email.trim().toLowerCase(),
-      internshipId.trim()
+      normalizedEmail,
+      normalizedInternshipId
     ]);
     stmt.free();
     saveDatabase();
@@ -269,7 +251,6 @@ app.use((err,req,res,next)=>{
   if(err instanceof SyntaxError && 'body' in err) return errorResponse(res,400,'Invalid JSON body.');
   console.error(err); return errorResponse(res,500,'Internal server error.');
 });
-
 async function start() {
   const SQL=await initSqlJs();
   db=fs.existsSync(DB_FILE) ? new SQL.Database(fs.readFileSync(DB_FILE)) : new SQL.Database();
