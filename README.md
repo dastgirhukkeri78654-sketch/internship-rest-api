@@ -3,7 +3,7 @@
 - **Live Application:** https://internship-rest-api-u86y.onrender.com/
 - **API Health Check:** https://internship-rest-api-u86y.onrender.com/api/health
 - **GitHub Repository:** https://github.com/dastgirhukkeri78654-sketch/internship-rest-api
-
+- **Walkthrough video: https://drive.google.com/file/d/1yfuHVch9i7ZlA29zQjGvNk-JYqgXQFVz/view?usp=sharing
 ## Live Deployment Verification
 
 The deployed application was tested successfully for the following:
@@ -253,7 +253,9 @@ The project should undergo additional testing and deployment checks before being
 - **Test evidence:** Add screenshots or links to the completed test report.
 
 Do not publish credentials, API secrets, or real applicant data in screenshots or documentation.
+## Project Walkthrough Video
 
+[Watch the project demonstration](https://drive.google.com/file/d/1yfuHVch9i7ZlA29zQjGvNk-JYqgXQFVz/view?usp=sharing)
 ## Author
 
 **Dastagir Hukkeri**
