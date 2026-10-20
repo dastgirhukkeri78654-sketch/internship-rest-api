@@ -1,3 +1,32 @@
+## Live Demo
+
+- **Live Application:** https://internship-rest-api-u86y.onrender.com/
+- **API Health Check:** https://internship-rest-api-u86y.onrender.com/api/health
+- **GitHub Repository:** https://github.com/dastgirhukkeri78654-sketch/internship-rest-api
+
+## Live Deployment Verification
+
+The deployed application was tested successfully for the following:
+
+- Internship search and domain filtering
+- Valid application submission
+- Duplicate application prevention
+- Required-field validation
+- API health check
+
+The health endpoint returned a successful response with the database status reported as connected.
+
+## Technology Stack
+
+- Node.js
+- Express.js
+- SQLite using `sql.js`
+- Helmet for security headers
+- Express Rate Limit for API rate limiting
+
+## Deployment Note
+
+The application is deployed on Render's free web service. The SQLite database file is stored on the service's local filesystem, so data may not persist across restarts or redeployments.
 # Internship REST API & Internship Board
 
 A responsive internship board built with **Node.js, Express, sql.js (SQLite), HTML, CSS, and JavaScript**. Users can explore internships, search and filter listings, view internship details, and submit applications.
